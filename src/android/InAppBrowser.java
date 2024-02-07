@@ -946,28 +946,17 @@ public class InAppBrowser extends CordovaPlugin {
                 inAppWebView.setWebChromeClient(new InAppChromeClient(thatWebView) {
                     public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
                         Log.d(LOG_TAG, "File Chooser 5.0+");
-                        // If callback exists, finish it.
-                        if (mUploadCallback != null) {
-                            mUploadCallback.onReceiveValue(null);
-                        }
                         mUploadCallback = filePathCallback;
-
                         if (fileChooserParams.isCaptureEnabled()) {
                             if (PermissionHelper.hasPermission(InAppBrowser.this, Manifest.permission.CAMERA) && PermissionHelper.hasPermission(InAppBrowser.this, Manifest.permission.READ_EXTERNAL_STORAGE) && PermissionHelper.hasPermission(InAppBrowser.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                                 try {
-                                    Log.e("LOGGER", "-------->1");
                                     Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                                    Log.e("LOGGER", "-------->2");
                                     File photoFile = createImageFile(); // Create a temporary file for the image
-                                    Log.e("LOGGER", "-------->3");
                                     mCurrentPhotoUri = FileProvider.getUriForFile(cordova.getActivity(),
                                             InAppBrowser.this.cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
                                             photoFile);
-                                    Log.e("LOGGER", "-------->4");
                                     intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
-                                    Log.e("LOGGER", "-------->5");
-                                    cordova.getActivity().startActivityForResult(intent, CAMERA_REQUEST_CODE);
-                                    Log.e("LOGGER", "-------->6");
+                                    cordova.startActivityForResult(intent, CAMERA_REQUEST_CODE);
                                 } catch (Exception e) {
                                     // Handle exception if no file picker is available
                                     Log.e("Exception", e.getMessage());
@@ -1146,23 +1135,16 @@ public class InAppBrowser extends CordovaPlugin {
         switch (requestCode) {
             case TAKE_PIC_SEC:
                 try {
-                    Log.e("LOGGER", "-------->14");
                     Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                    Log.e("LOGGER", "-------->15");
                     File photoFile = createImageFile(); // Create a temporary file for the image
-                    Log.e("LOGGER", "-------->16");
                     mCurrentPhotoUri = FileProvider.getUriForFile(cordova.getActivity(),
                             cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
                             photoFile);
-                    Log.e("LOGGER", "-------->17");
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
-                    Log.e("LOGGER", "-------->18");
-                    cordova.getActivity().startActivityForResult(intent, CAMERA_REQUEST_CODE);
-                    Log.e("LOGGER", "-------->19");
+                    cordova.startActivityForResult(intent, CAMERA_REQUEST_CODE);
                 } catch (Exception e) {
                     // Handle exception if no file picker is available
                     Log.e("Exception", e.getMessage());
-                    Log.e("LOGGER", "-------->20");
                 }
                 break;
         }
@@ -1171,14 +1153,10 @@ public class InAppBrowser extends CordovaPlugin {
 
     private File createImageFile() {
         // Create an image file name
-        Log.e("LOGGER", "-------->7");
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        Log.e("LOGGER", "-------->8");
         String imageFileName = "JPEG_" + timeStamp + "_";
-        Log.e("LOGGER", "-------->9");
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
-        Log.e("LOGGER", "-------->10");
         File image = null;
         try {
             image = File.createTempFile(
@@ -1186,13 +1164,11 @@ public class InAppBrowser extends CordovaPlugin {
                     ".jpg",         /* suffix */
                     storageDir      /* directory */
             );
-            Log.e("LOGGER", "-------->11");
         } catch (IOException e) {
             Log.e("LOGGER", "-------->12 " + e.getMessage());
             throw new RuntimeException(e);
 
         }
-        Log.e("LOGGER", "-------->13");
         // Save a file: path for use with ACTION_VIEW intents
 //        mCurrentPhotoPath = image.getAbsolutePath();
         return image;
@@ -1224,20 +1200,26 @@ public class InAppBrowser extends CordovaPlugin {
      * @param intent      the data from android file chooser
      */
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        LOG.d(LOG_TAG, "onActivityResult");
+        Log.d(LOG_TAG, "onActivityResult");
+        Log.e("LOGGER", "-------->1"+ requestCode);
         if (resultCode == RESULT_OK) {
+            Log.e("LOGGER", "-------->2");
             if (requestCode == FILECHOOSER_REQUESTCODE && mUploadCallback != null) {
+                Log.e("LOGGER", "-------->3");
                 mUploadCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent));
                 mUploadCallback = null;
+                return;
             } else if (requestCode == CAMERA_REQUEST_CODE && mUploadCallback != null) {
+                Log.e("LOGGER", "-------->4");
                 mUploadCallback.onReceiveValue(new Uri[]{mCurrentPhotoUri});
+                Log.e("LOGGER", "-------->5"+mCurrentPhotoUri.toString());
                 mUploadCallback = null;
+                return;
             }
-
         }
+        Log.e("LOGGER", "-------->5");
         // If RequestCode or Callback is Invalid
-        super.onActivityResult(requestCode, resultCode, intent);
-        return;
+        return super.onActivityResult(requestCode, resultCode, intent);
     }
 
     /**
