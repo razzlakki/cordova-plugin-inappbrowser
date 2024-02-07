@@ -156,7 +156,7 @@ public class InAppBrowser extends CordovaPlugin {
     private boolean openWindowHidden = false;
     private boolean clearAllCache = false;
     private boolean clearSessionCache = false;
-    private boolean hadwareBackButton = true;
+    private boolean hadwareBackButton = false;
     private boolean mediaPlaybackRequiresUserGesture = false;
     private boolean shouldPauseInAppBrowser = false;
     private boolean useWideViewPort = true;
@@ -166,9 +166,9 @@ public class InAppBrowser extends CordovaPlugin {
     private String closeButtonColor = "";
     private boolean leftToRight = false;
     private int toolbarColor = android.graphics.Color.LTGRAY;
-    private boolean hideNavigationButtons = false;
+    private boolean hideNavigationButtons = true;
     private String navigationButtonColor = "";
-    private boolean hideUrlBar = false;
+    private boolean hideUrlBar = true;
     private boolean showFooter = false;
     private String footerColor = "";
     private String beforeload = "";
