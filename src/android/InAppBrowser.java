@@ -18,12 +18,16 @@
 */
 package org.apache.cordova.inappbrowser;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.Browser;
 import android.content.res.Resources;
@@ -34,7 +38,9 @@ import android.net.http.SslError;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.InputType;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -63,6 +69,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.apache.cordova.PermissionHelper;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.Config;
 import org.apache.cordova.CordovaArgs;
@@ -75,11 +82,15 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -121,12 +132,16 @@ public class InAppBrowser extends CordovaPlugin {
 
     private static final int TOOLBAR_HEIGHT = 48;
 
+    private final int CAMERA_REQUEST_CODE = 0x4460;
+
     private static final List customizableOptions = Arrays.asList(CLOSE_BUTTON_CAPTION, TOOLBAR_COLOR, NAVIGATION_COLOR, CLOSE_BUTTON_COLOR, FOOTER_COLOR);
 
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
     private EditText edittext;
     private CallbackContext callbackContext;
+
+    private Uri mCurrentPhotoUri = null;
     private boolean showLocationBar = true;
     private boolean showZoomControls = true;
     private boolean openWindowHidden = false;
@@ -924,20 +939,41 @@ public class InAppBrowser extends CordovaPlugin {
                 inAppWebView.setWebChromeClient(new InAppChromeClient(thatWebView) {
                     public boolean onShowFileChooser (WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams)
                     {
-                        LOG.d(LOG_TAG, "File Chooser 5.0+");
+                        Log.d(LOG_TAG, "File Chooser 5.0+");
                         // If callback exists, finish it.
                         if(mUploadCallback != null) {
                             mUploadCallback.onReceiveValue(null);
                         }
                         mUploadCallback = filePathCallback;
 
-                        // Create File Chooser Intent
-                        Intent content = new Intent(Intent.ACTION_GET_CONTENT);
-                        content.addCategory(Intent.CATEGORY_OPENABLE);
-                        content.setType("*/*");
+                        if(fileChooserParams.isCaptureEnabled()){
+                            if (PermissionHelper.hasPermission(this, Manifest.permission.CAMERA)) {
+                                try {
+                                    Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                                    File photoFile = createImageFile(); // Create a temporary file for the image
+                                    mCurrentPhotoUri = FileProvider.getUriForFile(cordova.getActivity(),
+                                            cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
+                                            photoFile);
+                                    intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
+                                    cordova.startActivityForResult(intent, CAMERA_REQUEST_CODE);
+                                } catch (Exception e) {
+                                    // Handle exception if no file picker is available
+                                    Log.e("Exception", e.getMessage());
+                                    return false;
+                                }
 
-                        // Run cordova startActivityForResult
-                        cordova.startActivityForResult(InAppBrowser.this, Intent.createChooser(content, "Select File"), FILECHOOSER_REQUESTCODE);
+                            } else {
+                                PermissionHelper.requestPermission(this, TAKE_PIC_SEC, Manifest.permission.CAMERA);
+                            }
+                        }else {
+                            // Create File Chooser Intent
+                            Intent content = new Intent(Intent.ACTION_GET_CONTENT);
+                            content.addCategory(Intent.CATEGORY_OPENABLE);
+                            content.setType("*/*");
+
+                            // Run cordova startActivityForResult
+                            cordova.startActivityForResult(InAppBrowser.this, Intent.createChooser(content, "Select File"), FILECHOOSER_REQUESTCODE);
+                        }
                         return true;
                     }
                 });
@@ -1084,6 +1120,56 @@ public class InAppBrowser extends CordovaPlugin {
         sendUpdate(obj, keepCallback, PluginResult.Status.OK);
     }
 
+
+    public void onRequestPermissionResult(int requestCode, String[] permissions,
+                                          int[] grantResults) {
+        for (int r : grantResults) {
+            if (r == PackageManager.PERMISSION_DENIED) {
+                this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, PERMISSION_DENIED_ERROR));
+                return;
+            }
+        }
+        switch (requestCode) {
+            case TAKE_PIC_SEC:
+                try {
+                    Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    File photoFile = createImageFile(); // Create a temporary file for the image
+                    mCurrentPhotoUri = FileProvider.getUriForFile(cordova.getActivity(),
+                            cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
+                            photoFile);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
+                    cordova.startActivityForResult(intent, CAMERA_REQUEST_CODE);
+                } catch (Exception e) {
+                    // Handle exception if no file picker is available
+                    Log.e("Exception", e.getMessage());
+                }
+                break;
+        }
+    }
+
+
+    private File createImageFile() {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = null;
+        try {
+            image = File.createTempFile(
+                    imageFileName,  /* prefix */
+                    ".jpg",         /* suffix */
+                    storageDir      /* directory */
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // Save a file: path for use with ACTION_VIEW intents
+//        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+
     /**
      * Create a new plugin result and send it back to JavaScript
      *
@@ -1110,13 +1196,19 @@ public class InAppBrowser extends CordovaPlugin {
      */
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         LOG.d(LOG_TAG, "onActivityResult");
+        if (resultCode == RESULT_OK) {
+            if(requestCode == FILECHOOSER_REQUESTCODE && mUploadCallback != null){
+                mUploadCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent));
+                mUploadCallback = null;
+            }else if(requestCode == CAMERA_REQUEST_CODE && mUploadCallback != null){
+                mUploadCallback.onReceiveValue(new Uri[]{mCurrentPhotoUri});
+                mUploadCallback = null;
+            }
+
+        }
         // If RequestCode or Callback is Invalid
-        if(requestCode != FILECHOOSER_REQUESTCODE || mUploadCallback == null) {
             super.onActivityResult(requestCode, resultCode, intent);
             return;
-        }
-        mUploadCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent));
-        mUploadCallback = null;
     }
 
     /**
