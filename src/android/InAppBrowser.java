@@ -110,6 +110,8 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String ZOOM = "zoom";
     private static final String HIDDEN = "hidden";
     private static final String LOAD_START_EVENT = "loadstart";
+
+    private static final String ON_CLOSE_EVENT = "onClose";
     private static final String LOAD_STOP_EVENT = "loadstop";
     private static final String LOAD_ERROR_EVENT = "loaderror";
     private static final String DOWNLOAD_EVENT = "download";
@@ -151,10 +153,10 @@ public class InAppBrowser extends CordovaPlugin {
     private CallbackContext callbackContext;
 
     private Uri mCurrentPhotoUri = null;
-    private boolean showLocationBar = true;
+    private boolean showLocationBar = false;
     private boolean showZoomControls = true;
     private boolean openWindowHidden = false;
-    private boolean clearAllCache = false;
+    private boolean clearAllCache = true;
     private boolean clearSessionCache = false;
     private boolean hadwareBackButton = false;
     private boolean mediaPlaybackRequiresUserGesture = false;
@@ -645,9 +647,6 @@ public class InAppBrowser extends CordovaPlugin {
      */
     public String showWebPage(final String url, HashMap<String, String> features) {
         // Determine if we should hide the location bar.
-        showLocationBar = true;
-        showZoomControls = true;
-        openWindowHidden = false;
         mediaPlaybackRequiresUserGesture = false;
 
         if (features != null) {
@@ -984,6 +983,7 @@ public class InAppBrowser extends CordovaPlugin {
                 currentClient = new InAppBrowserClient(thatWebView, edittext, beforeload);
                 inAppWebView.setWebViewClient(currentClient);
                 WebSettings settings = inAppWebView.getSettings();
+                settings.setUserAgentString("'Mozilla/5.0 (Linux; Android 11; Nokia 8.1 Build/RKQ1.200906.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Firefox/115.0.5790.138 Mobile Safari/537.36'");
                 settings.setJavaScriptEnabled(true);
                 settings.setJavaScriptCanOpenWindowsAutomatically(true);
                 settings.setBuiltInZoomControls(showZoomControls);
@@ -1199,7 +1199,7 @@ public class InAppBrowser extends CordovaPlugin {
      */
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         Log.d(LOG_TAG, "onActivityResult");
-        Log.e("LOGGER", "-------->1"+ requestCode);
+        Log.e("LOGGER", "-------->1" + requestCode);
         if (resultCode == RESULT_OK) {
             Log.e("LOGGER", "-------->2");
             if (requestCode == FILECHOOSER_REQUESTCODE && mUploadCallback != null) {
@@ -1210,7 +1210,7 @@ public class InAppBrowser extends CordovaPlugin {
             } else if (requestCode == CAMERA_REQUEST_CODE && mUploadCallback != null) {
                 Log.e("LOGGER", "-------->4");
                 mUploadCallback.onReceiveValue(new Uri[]{mCurrentPhotoUri});
-                Log.e("LOGGER", "-------->5"+mCurrentPhotoUri.toString());
+                Log.e("LOGGER", "-------->5" + mCurrentPhotoUri.toString());
                 mUploadCallback = null;
                 return;
             }
@@ -1466,6 +1466,30 @@ public class InAppBrowser extends CordovaPlugin {
             } catch (JSONException ex) {
                 LOG.e(LOG_TAG, "URI passed in has caused a JSON error.");
             }
+
+            if (url != null && url.contains("URL_SDK_EVENT")) {
+                try {
+                    Uri uri = Uri.parse(url);
+                    String eventDetails = uri.getLastPathSegment();
+                    String status = (eventDetails.split("-"))[1];
+                    if (status.equalsIgnoreCase("ON_CLOSE")) {
+                        try {
+                            JSONObject obj = new JSONObject();
+                            obj.put("type", ON_CLOSE_EVENT);
+                            obj.put("url", newloc);
+                            sendUpdate(obj, true);
+                            closeDialog();
+                        } catch (JSONException ex) {
+                            LOG.e(LOG_TAG, "URI passed in has caused a JSON error.");
+                        }
+                    } else if (status.equalsIgnoreCase("ON_SUBMIT")) {
+                        //On Submit event
+                    }
+                } catch (Exception ignore) {
+                    //
+                }
+            }
+
         }
 
         public void onPageFinished(WebView view, String url) {
