@@ -53,7 +53,7 @@
 
         <config-file target="AndroidManifest.xml" parent="application">
             <provider
-                android:name="org.apache.cordova.camera.FileProvider"
+                android:name="org.apache.cordova.inappbrowser.InAppBrowser"
                 android:authorities="${applicationId}.cordova.plugin.camera.provider"
                 android:exported="false"
                 android:grantUriPermissions="true" >
