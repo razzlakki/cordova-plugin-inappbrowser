@@ -69,6 +69,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.core.content.FileProvider;
+
+
 import org.apache.cordova.PermissionHelper;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.Config;
@@ -132,7 +135,13 @@ public class InAppBrowser extends CordovaPlugin {
 
     private static final int TOOLBAR_HEIGHT = 48;
 
+    public static final int PERMISSION_DENIED_ERROR = 20;
+
+
     private final int CAMERA_REQUEST_CODE = 0x4460;
+
+    public static final int TAKE_PIC_SEC = 0;
+
 
     private static final List customizableOptions = Arrays.asList(CLOSE_BUTTON_CAPTION, TOOLBAR_COLOR, NAVIGATION_COLOR, CLOSE_BUTTON_COLOR, FOOTER_COLOR);
 
@@ -947,12 +956,12 @@ public class InAppBrowser extends CordovaPlugin {
                         mUploadCallback = filePathCallback;
 
                         if(fileChooserParams.isCaptureEnabled()){
-                            if (PermissionHelper.hasPermission(this, Manifest.permission.CAMERA)) {
+                            if (PermissionHelper.hasPermission(InAppBrowser.this, Manifest.permission.CAMERA)) {
                                 try {
                                     Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                                     File photoFile = createImageFile(); // Create a temporary file for the image
                                     mCurrentPhotoUri = FileProvider.getUriForFile(cordova.getActivity(),
-                                            cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
+                                            InAppBrowser.this.cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
                                             photoFile);
                                     intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
                                     cordova.startActivityForResult(intent, CAMERA_REQUEST_CODE);
