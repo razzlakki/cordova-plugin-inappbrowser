@@ -1219,7 +1219,8 @@ public class InAppBrowser extends CordovaPlugin {
         }
         Log.e("LOGGER", "-------->5");
         // If RequestCode or Callback is Invalid
-        return super.onActivityResult(requestCode, resultCode, intent);
+        super.onActivityResult(requestCode, resultCode, intent);
+        return;
     }
 
     /**
