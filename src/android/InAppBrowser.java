@@ -1132,21 +1132,19 @@ public class InAppBrowser extends CordovaPlugin {
                 return;
             }
         }
-        switch (requestCode) {
-            case TAKE_PIC_SEC:
-                try {
-                    Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                    File photoFile = createImageFile(); // Create a temporary file for the image
-                    mCurrentPhotoUri = FileProvider.getUriForFile(cordova.getActivity(),
-                            cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
-                            photoFile);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
-                    cordova.startActivityForResult(intent, CAMERA_REQUEST_CODE);
-                } catch (Exception e) {
-                    // Handle exception if no file picker is available
-                    Log.e("Exception", e.getMessage());
-                }
-                break;
+        if (requestCode == TAKE_PIC_SEC) {
+            try {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                File photoFile = createImageFile(); // Create a temporary file for the image
+                mCurrentPhotoUri = FileProvider.getUriForFile(cordova.getActivity(),
+                        cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
+                        photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
+                this.cordova.startActivityForResult(intent, CAMERA_REQUEST_CODE);
+            } catch (Exception e) {
+                // Handle exception if no file picker is available
+                Log.e("Exception", e.getMessage());
+            }
         }
     }
 
