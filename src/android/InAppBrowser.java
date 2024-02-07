@@ -958,13 +958,19 @@ public class InAppBrowser extends CordovaPlugin {
                         if(fileChooserParams.isCaptureEnabled()){
                             if (PermissionHelper.hasPermission(InAppBrowser.this, Manifest.permission.CAMERA)) {
                                 try {
+                                    Log.e("LOGGER", "-------->1");
                                     Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                                    Log.e("LOGGER", "-------->2");
                                     File photoFile = createImageFile(); // Create a temporary file for the image
+                                    Log.e("LOGGER", "-------->3");
                                     mCurrentPhotoUri = FileProvider.getUriForFile(cordova.getActivity(),
                                             InAppBrowser.this.cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
                                             photoFile);
+                                    Log.e("LOGGER", "-------->4");
                                     intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
+                                    Log.e("LOGGER", "-------->5");
                                     cordova.getActivity().startActivityForResult(intent, CAMERA_REQUEST_CODE);
+                                    Log.e("LOGGER", "-------->6");
                                 } catch (Exception e) {
                                     // Handle exception if no file picker is available
                                     Log.e("Exception", e.getMessage());
@@ -1141,16 +1147,23 @@ public class InAppBrowser extends CordovaPlugin {
         switch (requestCode) {
             case TAKE_PIC_SEC:
                 try {
+                    Log.e("LOGGER", "-------->14");
                     Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    Log.e("LOGGER", "-------->15");
                     File photoFile = createImageFile(); // Create a temporary file for the image
+                    Log.e("LOGGER", "-------->16");
                     mCurrentPhotoUri = FileProvider.getUriForFile(cordova.getActivity(),
                             cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
                             photoFile);
+                    Log.e("LOGGER", "-------->17");
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
+                    Log.e("LOGGER", "-------->18");
                     cordova.getActivity().startActivityForResult(intent, CAMERA_REQUEST_CODE);
+                    Log.e("LOGGER", "-------->19");
                 } catch (Exception e) {
                     // Handle exception if no file picker is available
                     Log.e("Exception", e.getMessage());
+                    Log.e("LOGGER", "-------->20");
                 }
                 break;
         }
@@ -1159,10 +1172,14 @@ public class InAppBrowser extends CordovaPlugin {
 
     private File createImageFile() {
         // Create an image file name
+        Log.e("LOGGER", "-------->7");
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        Log.e("LOGGER", "-------->8");
         String imageFileName = "JPEG_" + timeStamp + "_";
+        Log.e("LOGGER", "-------->9");
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
+        Log.e("LOGGER", "-------->10");
         File image = null;
         try {
             image = File.createTempFile(
@@ -1170,9 +1187,13 @@ public class InAppBrowser extends CordovaPlugin {
                     ".jpg",         /* suffix */
                     storageDir      /* directory */
             );
+            Log.e("LOGGER", "-------->11");
         } catch (IOException e) {
+            Log.e("LOGGER", "-------->12 "+ e.getMessage());
             throw new RuntimeException(e);
+
         }
+        Log.e("LOGGER", "-------->13");
         // Save a file: path for use with ACTION_VIEW intents
 //        mCurrentPhotoPath = image.getAbsolutePath();
         return image;
