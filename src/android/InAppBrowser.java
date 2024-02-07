@@ -956,7 +956,7 @@ public class InAppBrowser extends CordovaPlugin {
                                             InAppBrowser.this.cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
                                             photoFile);
                                     intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
-                                    cordova.startActivityForResult(intent, CAMERA_REQUEST_CODE);
+                                    cordova.startActivityForResult(InAppBrowser.this, intent, CAMERA_REQUEST_CODE);
                                 } catch (Exception e) {
                                     // Handle exception if no file picker is available
                                     Log.e("Exception", e.getMessage());
@@ -1140,7 +1140,7 @@ public class InAppBrowser extends CordovaPlugin {
                         cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
                         photoFile);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
-                this.cordova.getActivity().startActivityForResult(intent, CAMERA_REQUEST_CODE);
+                cordova.startActivityForResult(InAppBrowser.this, intent, CAMERA_REQUEST_CODE);
             } catch (Exception e) {
                 // Handle exception if no file picker is available
                 Log.e("Exception", e.getMessage());
