@@ -1480,10 +1480,10 @@ public class InAppBrowser extends CordovaPlugin {
                             sendUpdate(obj, false);
                             LOG.e(LOG_TAG, "CLOSE EVENT SENT");
 
-                            JSONObject obj = new JSONObject();
-                            obj.put("type", MESSAGE_EVENT);   
-                            obj.put("data", new JSONObject("{\"event\":\"close\",\"data\":null}"));
-                            sendUpdate(obj, true);            
+                            JSONObject obj1 = new JSONObject();
+                            obj1.put("type", MESSAGE_EVENT);   
+                            obj1.put("data", new JSONObject("{\"event\":\"close\",\"data\":null}"));
+                            sendUpdate(obj1, true);            
 
 
                             closeDialog();
@@ -1497,10 +1497,10 @@ public class InAppBrowser extends CordovaPlugin {
                         sendUpdate(obj, false);
                         LOG.e(LOG_TAG, "SUBMIT EVENT SENT");
 
-                        JSONObject obj = new JSONObject();
-                        obj.put("type", MESSAGE_EVENT);   
-                        obj.put("data", new JSONObject("{\"event\":\"submit\",\"data\":null}"));
-                        sendUpdate(obj, true);
+                        JSONObject obj1 = new JSONObject();
+                        obj1.put("type", MESSAGE_EVENT);   
+                        obj1.put("data", new JSONObject("{\"event\":\"submit\",\"data\":null}"));
+                        sendUpdate(obj1, true);
 
                         closeDialog();
                     }
