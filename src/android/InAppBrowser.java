@@ -1478,6 +1478,14 @@ public class InAppBrowser extends CordovaPlugin {
                             JSONObject obj = new JSONObject();
                             obj.put("type", ON_CLOSE_EVENT);
                             sendUpdate(obj, false);
+                            LOG.e(LOG_TAG, "CLOSE EVENT SENT");
+
+                            JSONObject obj = new JSONObject();
+                            obj.put("type", MESSAGE_EVENT);   
+                            obj.put("data", new JSONObject("{\"event\":\"close\",\"data\":null}"));
+                            sendUpdate(obj, true);            
+
+
                             closeDialog();
                         } catch (JSONException ex) {
                             LOG.e(LOG_TAG, "URI passed in has caused a JSON error.");
@@ -1487,6 +1495,13 @@ public class InAppBrowser extends CordovaPlugin {
                         JSONObject obj = new JSONObject();
                         obj.put("type", ON_SUBMIT_EVENT);
                         sendUpdate(obj, false);
+                        LOG.e(LOG_TAG, "SUBMIT EVENT SENT");
+
+                        JSONObject obj = new JSONObject();
+                            obj.put("type", MESSAGE_EVENT);   
+                            obj.put("data", new JSONObject("{\"event\":\"submit\",\"data\":null}"));
+                            sendUpdate(obj, true)
+
                         closeDialog();
                     }
                 } catch (Exception ignore) {
