@@ -1498,9 +1498,9 @@ public class InAppBrowser extends CordovaPlugin {
                         LOG.e(LOG_TAG, "SUBMIT EVENT SENT");
 
                         JSONObject obj = new JSONObject();
-                            obj.put("type", MESSAGE_EVENT);   
-                            obj.put("data", new JSONObject("{\"event\":\"submit\",\"data\":null}"));
-                            sendUpdate(obj, true)
+                        obj.put("type", MESSAGE_EVENT);   
+                        obj.put("data", new JSONObject("{\"event\":\"submit\",\"data\":null}"));
+                        sendUpdate(obj, true);
 
                         closeDialog();
                     }
