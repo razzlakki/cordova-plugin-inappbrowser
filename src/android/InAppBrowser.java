@@ -1125,6 +1125,7 @@ public class InAppBrowser extends CordovaPlugin {
     }
 
 
+
     public void onRequestPermissionResult(int requestCode, String[] permissions,
                                           int[] grantResults) {
         for (int r : grantResults) {
