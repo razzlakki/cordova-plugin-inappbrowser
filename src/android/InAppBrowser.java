@@ -633,7 +633,7 @@ public class InAppBrowser extends CordovaPlugin {
      * @return boolean
      */
     private boolean getShowLocationBar() {
-        return this.showLocationBar;
+        return false;
     }
 
     private InAppBrowser getInAppBrowser() {
