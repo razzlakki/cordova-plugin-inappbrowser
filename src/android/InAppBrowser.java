@@ -1478,7 +1478,7 @@ public class InAppBrowser extends CordovaPlugin {
                         try {
                             closeDialog();
                             LOG.e(LOG_TAG, "CLOSE EVENT SENT");
-                        } catch (JSONException ex) {
+                        } catch (Exception ex) {
                             LOG.e(LOG_TAG, "URI passed in has caused a JSON error.");
                         }
                     } else if (status.equalsIgnoreCase("ON_SUBMIT")) {
