@@ -1021,7 +1021,7 @@ public class InAppBrowser extends CordovaPlugin {
                             JSONObject obj = new JSONObject();
                             obj.put("type", MESSAGE_EVENT);
                             obj.put("data", new JSONObject(data));
-                            sendUpdate(obj, true);
+                            //sendUpdate(obj, true); //Comment for testing 
                         } catch (JSONException ex) {
                             LOG.e(LOG_TAG, "data object passed to postMessage has caused a JSON error.");
                         }
@@ -1476,33 +1476,18 @@ public class InAppBrowser extends CordovaPlugin {
                     String status = (eventDetails.split("-"))[1];
                     if (status.equalsIgnoreCase("ON_CLOSE")) {
                         try {
-                            JSONObject obj = new JSONObject();
-                            obj.put("type", ON_CLOSE_EVENT);
-                            sendUpdate(obj, true);
-                            LOG.e(LOG_TAG, "CLOSE EVENT SENT");
-
-                            JSONObject obj1 = new JSONObject();
-                            obj1.put("type", MESSAGE_EVENT);   
-                            obj1.put("data", new JSONObject("{\"event\":\"close\",\"data\":null}"));
-                            sendUpdate(obj1, true);            
-
-
                             closeDialog();
+                            LOG.e(LOG_TAG, "CLOSE EVENT SENT");
                         } catch (JSONException ex) {
                             LOG.e(LOG_TAG, "URI passed in has caused a JSON error.");
                         }
                     } else if (status.equalsIgnoreCase("ON_SUBMIT")) {
                         //On Submit event
-                        JSONObject obj = new JSONObject();
-                        obj.put("type", ON_SUBMIT_EVENT);
-                        sendUpdate(obj, true);
-                        LOG.e(LOG_TAG, "SUBMIT EVENT SENT");
-
                         JSONObject obj1 = new JSONObject();
                         obj1.put("type", MESSAGE_EVENT);   
                         obj1.put("data", new JSONObject("{\"event\":\"submit\",\"data\":null}"));
                         sendUpdate(obj1, true);
-
+                        LOG.e(LOG_TAG, "SUBMIT EVENT SENT");
                         closeDialog();
                     }
                 } catch (Exception ignore) {
