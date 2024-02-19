@@ -1477,7 +1477,7 @@ public class InAppBrowser extends CordovaPlugin {
                         try {
                             JSONObject obj = new JSONObject();
                             obj.put("type", ON_CLOSE_EVENT);
-                            sendUpdate(obj, false);
+                            sendUpdate(obj, true);
                             LOG.e(LOG_TAG, "CLOSE EVENT SENT");
 
                             JSONObject obj1 = new JSONObject();
@@ -1494,7 +1494,7 @@ public class InAppBrowser extends CordovaPlugin {
                         //On Submit event
                         JSONObject obj = new JSONObject();
                         obj.put("type", ON_SUBMIT_EVENT);
-                        sendUpdate(obj, false);
+                        sendUpdate(obj, true);
                         LOG.e(LOG_TAG, "SUBMIT EVENT SENT");
 
                         JSONObject obj1 = new JSONObject();
