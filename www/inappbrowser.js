@@ -32,8 +32,6 @@
             loadstop: channel.create('loadstop'),
             loaderror: channel.create('loaderror'),
             exit: channel.create('exit'),
-            close: channel.create('close'),
-            submit: channel.create('submit')
             customscheme: channel.create('customscheme'),
             message: channel.create('message'),
             download: channel.create('download')
