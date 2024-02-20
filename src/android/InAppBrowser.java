@@ -1142,25 +1142,19 @@ public class InAppBrowser extends CordovaPlugin {
                 return;
             }
         }
-        try {
-            Log.d(LOG_TAG, "------> 95");
-            Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            Log.d(LOG_TAG, "------> 96");
-            File photoFile = createImageFile(); // Create a temporary file for the image
-            Log.d(LOG_TAG, "------> 97");
-            mCurrentPhotoUri = FileProvider.getUriForFile(cordova.getActivity(),
-                    InAppBrowser.this.cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
-                    photoFile);
-            Log.d(LOG_TAG, "------> 98");
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
-            Log.d(LOG_TAG, "------> 99");
-            cordova.startActivityForResult(InAppBrowser.this, intent, CAMERA_REQUEST_CODE);
-            Log.d(LOG_TAG, "------> 100");
-        } catch (Exception e) {
-            // Handle exception if no file picker is available
-            Log.d(LOG_TAG, "------> 113");
-            Log.e(LOG_TAG, e.getMessage());
-            return false;
+        if (requestCode == TAKE_PIC_SEC) {
+            try {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                File photoFile = createImageFile(); // Create a temporary file for the image
+                mCurrentPhotoUri = FileProvider.getUriForFile(cordova.getActivity(),
+                        cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
+                        photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
+                cordova.startActivityForResult(InAppBrowser.this, intent, CAMERA_REQUEST_CODE);
+            } catch (Exception e) {
+                // Handle exception if no file picker is available
+                Log.e("Exception", e.getMessage());
+            }
         }
     }
 
