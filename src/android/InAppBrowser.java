@@ -949,7 +949,7 @@ public class InAppBrowser extends CordovaPlugin {
                         mUploadCallback = filePathCallback;
                         if (fileChooserParams.isCaptureEnabled()) {
                                Log.d(LOG_TAG, "------> 1");
-                            if (PermissionHelper.hasPermission(InAppBrowser.this, Manifest.permission.CAMERA) && PermissionHelper.hasPermission(InAppBrowser.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            if (PermissionHelper.hasPermission(InAppBrowser.this, Manifest.permission.CAMERA)) {
                                    Log.d(LOG_TAG, "------> 4");
                                 try {
                                     Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
