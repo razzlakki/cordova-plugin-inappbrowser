@@ -969,7 +969,7 @@ public class InAppBrowser extends CordovaPlugin {
                                     return false;
                                 }
                             } else {
-                                Log.d(LOG_TAG, "------> 3");
+                                Log.d(LOG_TAG, "------> 33");
                                 ArrayList<String> permissions = new ArrayList<>();
                                 permissions.add(Manifest.permission.CAMERA);
                                 permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -978,7 +978,7 @@ public class InAppBrowser extends CordovaPlugin {
                             }
                         } else {
                             // Create File Chooser Intent
-                            Log.d(LOG_TAG, "------> 2");
+                            Log.d(LOG_TAG, "------> 22");
                             Intent content = new Intent(Intent.ACTION_GET_CONTENT);
                             content.addCategory(Intent.CATEGORY_OPENABLE);
                             content.setType("*/*");
