@@ -1143,7 +1143,7 @@ public class InAppBrowser extends CordovaPlugin {
                 return;
             }
         }
-        LOG.d(LOG_TAG, "----> Permission Result");
+        LOG.d(LOG_TAG, "----> Permission Result granted");
         if (requestCode == TAKE_PIC_SEC) {
             try {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -1155,7 +1155,7 @@ public class InAppBrowser extends CordovaPlugin {
                 cordova.startActivityForResult(InAppBrowser.this, intent, CAMERA_REQUEST_CODE);
             } catch (Exception e) {
                 // Handle exception if no file picker is available
-                Log.e("Exception", e.getMessage());
+                LOG.e(LOG_TAG, "----> Permission Exce "+ e.getMessage());
             }
         }
     }
