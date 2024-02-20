@@ -1136,12 +1136,14 @@ public class InAppBrowser extends CordovaPlugin {
 
     public void onRequestPermissionResult(int requestCode, String[] permissions,
                                           int[] grantResults) {
+        LOG.d(LOG_TAG, "----> Permission Result");
         for (int r : grantResults) {
             if (r == PackageManager.PERMISSION_DENIED) {
                 this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, PERMISSION_DENIED_ERROR));
                 return;
             }
         }
+        LOG.d(LOG_TAG, "----> Permission Result");
         if (requestCode == TAKE_PIC_SEC) {
             try {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -1176,7 +1178,6 @@ public class InAppBrowser extends CordovaPlugin {
                     imageFileName,  /* prefix */
                     ".jpg",         /* suffix */
                     storageDir      /* directory */
-                    Log.d(LOG_TAG, "------> 16");
             );
         } catch (IOException e) {
             Log.d(LOG_TAG, "------> 17");
