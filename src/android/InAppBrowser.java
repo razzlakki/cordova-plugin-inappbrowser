@@ -950,20 +950,26 @@ public class InAppBrowser extends CordovaPlugin {
                         if (fileChooserParams.isCaptureEnabled()) {
                                Log.d(LOG_TAG, "------> 1");
                             if (PermissionHelper.hasPermission(InAppBrowser.this, Manifest.permission.CAMERA) && PermissionHelper.hasPermission(InAppBrowser.this, Manifest.permission.READ_EXTERNAL_STORAGE) && PermissionHelper.hasPermission(InAppBrowser.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                                   Log.d(LOG_TAG, "------> 4");
                                 try {
                                     Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                                       Log.d(LOG_TAG, "------> 5");
                                     File photoFile = createImageFile(); // Create a temporary file for the image
+                                       Log.d(LOG_TAG, "------> 6");
                                     mCurrentPhotoUri = FileProvider.getUriForFile(cordova.getActivity(),
                                             InAppBrowser.this.cordova.getContext().getPackageName() + ".cordova.plugin.camera.provider",
                                             photoFile);
+                                       Log.d(LOG_TAG, "------> 7");
                                     intent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
+                                       Log.d(LOG_TAG, "------> 8");
                                     cordova.startActivityForResult(InAppBrowser.this, intent, CAMERA_REQUEST_CODE);
                                 } catch (Exception e) {
                                     // Handle exception if no file picker is available
-                                    Log.e("Exception", e.getMessage());
+                                   Log.d(LOG_TAG, "------> 9"+e.getMessage());
                                     return false;
                                 }
                             } else {
+                                Log.d(LOG_TAG, "------> 3");
                                 ArrayList<String> permissions = new ArrayList<>();
                                 permissions.add(Manifest.permission.CAMERA);
                                 permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -972,6 +978,7 @@ public class InAppBrowser extends CordovaPlugin {
                             }
                         } else {
                             // Create File Chooser Intent
+                            Log.d(LOG_TAG, "------> 2");
                             Intent content = new Intent(Intent.ACTION_GET_CONTENT);
                             content.addCategory(Intent.CATEGORY_OPENABLE);
                             content.setType("*/*");
